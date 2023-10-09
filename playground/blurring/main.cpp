@@ -5,35 +5,40 @@
 
 #include <SkinnyNamespace.h>
 
-#include <QskSizePolicy.h>
-#include <QskFunctions.h>
 #include <QskControl.h>
-#include <QskSetup.h>
-#include <QskWindow.h>
-#include <QskRgbValue.h>
-#include <QskSkinManager.h>
+#include <QskFunctions.h>
 #include <QskGridBox.h>
 #include <QskLinearBox.h>
-#include <QskTextLabel.h>
 #include <QskPushButton.h>
-#include <QskQuickItem.h>
 #include <QskQuick.h>
+#include <QskQuickItem.h>
+#include <QskRgbValue.h>
+#include <QskSetup.h>
+#include <QskSizePolicy.h>
+#include <QskSkinManager.h>
+#include <QskTextLabel.h>
+#include <QskWindow.h>
+#include <QskBoxBorderColors.h>
+#include <QskBoxBorderMetrics.h>
+#include <QskGraphicLabel.h>
+#include <QskGraphic.h>
+#include <QskGraphicProvider.h>
+#include <QskAnimator.h>
 
 #include <QApplication>
-#include <QListWidget>
 #include <QDebug>
+#include <QListWidget>
 
 #include <functional>
 #include <vector>
 
 #include <SkinnyShortcut.h>
 
+#include <private/qquickitem_p.h>
 #include <private/qquickshadereffect_p.h>
 #include <private/qquickshadereffectsource_p.h>
-#include <private/qquickitem_p.h>
 
 #include <QQuickItem>
-#include <QTimer>
 
 const char* vertexShader = R"(
     uniform highp mat4 qt_Matrix;
@@ -44,99 +49,120 @@ const char* vertexShader = R"(
         coord = qt_MultiTexCoord0;
         gl_Position = qt_Matrix * qt_Vertex;
     })";
+
 const char* fragmentShader = R"(
     varying highp vec2 coord;
     uniform sampler2D source;
     uniform lowp float qt_Opacity;
+    
     void main() {
-        lowp vec4 tex = texture2D(source, coord);
-        gl_FragColor = vec4(vec3(0.0, tex.yz), tex.a) * qt_Opacity;
-        // gl_FragColor = vec4(1.0);
+        vec2 delta = vec2(0.01, 0.01);
+        gl_FragColor =(0.0538 * texture2D(source, coord - 3.182 * delta)
+                     + 0.3229 * texture2D(source, coord - 1.364 * delta)
+                     + 0.2466 * texture2D(source, coord)
+                     + 0.3229 * texture2D(source, coord + 1.364 * delta)
+                     + 0.0538 * texture2D(source, coord + 3.182 * delta)) * qt_Opacity;
     })";
 
 class MainView : public QskControl
 {
-    static void addBlurredBox(QQuickItem* item)
-    {     
-        auto* const layer = QQuickItemPrivate::get(item)->layer();
-        layer->setProperty( "samples", { 1 } );
-        // layer->setProperty( "sourceRect", QRectF{ 0, 0, 400, 400 } );
-        // layer->setProperty( "textureSize", QSize{ 400, 400 } );
-        layer->setProperty( "mipmap", { true } );
-        layer->setProperty( "smooth", { true } );
-        layer->setProperty( "enabled", { true } );        
-
-        auto* const window = item->window();
-
-        // - contentItem
-        //  - mainView : gradient
-        //   - root
-        //    + blurring
-        //    - box
-        //     - buttonA
-        //     - buttonB
-        //     - buttonC
-
-        const auto children = item->children();
-        const auto childItems = item->childItems();
-
-        auto* const source = new QQuickShaderEffectSource(item);
-        item->childItems()[0]->stackBefore(source);
-        // source->setPosition({100,100});
-        // source->setSize({400,400});
-        source->setSourceItem(item);
-        source->setMipmap(true);
-        source->setSourceRect({0,0,400,400});        
-        source->setLive(true);
-        source->setRecursive(false);
-        source->setHideSource(true);
-        source->setSamples(1);
-       
-        auto* const effect = new QQuickShaderEffect(item);
-        effect->setSize({400,400});
-        qskSetItemGeometry(effect, 0,0,400,400);
-        #if true
-        effect->setVertexShader(vertexShader);
-        effect->setFragmentShader(fragmentShader);
-        auto sourceVariant = QVariant::fromValue<QQuickShaderEffectSource*>(source);
-        effect->setProperty("source", sourceVariant);  
-        effect->update();
-        #endif
-
-        qDebug() << item;
-        qDebug() << source;
-        qDebug() << effect;
-
-        item->update();
-    }
-
-public:
-    explicit MainView(QQuickItem* parent = nullptr) : QskControl(parent)
+  public:
+    explicit MainView( QQuickItem* parent = nullptr )
+        : QskControl( parent )
     {
-        auto* const root = new QskBox(this);
-        auto* const box = new QskBox(root); // item
+        setAutoLayoutChildren( true );        
+       
+        auto* const layout = new QskLinearBox(Qt::Vertical, this);
+        layout->setPanel(true);
+        layout->setGradientHint(QskLinearBox::Panel, {Qt::red, Qt::blue});
+
+        auto* const header = new QskPushButton("Header", layout);
+
+        auto* const graphic = new QskGraphicLabel( layout );
+        graphic->setFillMode( QskGraphicLabel::FillMode::Stretch );
+        graphic->setAlignment( Qt::AlignCenter );
+        graphic->setMaximumSize(400,300);
+        const QImage image( QString( R"(C:\Users\vrick\Pictures\cd78c06d5f34aab556aa39ddb493e964.jpg)" ));
+        graphic->setGraphic( QskGraphic::fromImage( image ) );
+
+        class Animator : public QObject, public QskAnimator
         {
+          public:
+            explicit Animator(QskGraphicLabel& label, QObject* parent = nullptr) : QObject(parent), label(label)
+            {
+            }
+          private:
+            void advance(qreal v) override
+            {
+                const auto x = qCos(M_PI * 2.0 * v) * 10;
+                const auto y = qSin(M_PI * 2.0 * v) * 10;
+                label.setPosition(x,y);
+            }
+
+            QskGraphicLabel& label;
+        };
+
+        auto* const animator = new Animator(*graphic, graphic);
+        animator->setWindow(window());
+        animator->setDuration(1000);
+        animator->setAutoRepeat(true);
+        animator->start();
+
+        auto* const footer = new QskPushButton("Footer", layout);
+        {
+            // Object Tree
+            // - contentItem
+            //  - mainView
+            //   - layout
+            //    - box
+
+            // Object Item Tree
+            // - contentItem
+            //  - mainView
+            //   - layout
+            //    - box
+            //  - blurred
+
+            auto* const parentItem = this;
+            auto* const sourceItem = this;
+
             // background
-            auto* const effect = new QQuickShaderEffect(box);
+
+            // see: https://doc.qt.io/qt-5/qml-qtquick-item.html#layer.enabled-prop
+            auto* const layer = QQuickItemPrivate::get( sourceItem )->layer();
+            layer->setProperty( "enabled", { true } );
+
+            auto* const dialog = new QskControl(window()->contentItem());
+            dialog->setGeometry( 100, 100, 600, 400 );
+
+            auto* const source = new QQuickShaderEffectSource( dialog );
+            source->setSourceItem( sourceItem );
+            source->setSourceRect(dialog->geometry());
+            source->setLive( true );
+            source->setRecursive( true );
+
+            auto* const effect = new QQuickShaderEffect( dialog );
+            effect->setVertexShader( vertexShader );
+            effect->setFragmentShader( fragmentShader );
+            effect->setProperty( "source", QVariant::fromValue< QQuickShaderEffectSource* >( source ) );
+            effect->setVisible(true);
+            effect->update();
 
             // foreground
-            auto* const layout = new QskLinearBox(box); // child[0]    
-            (void) new QskPushButton("A", layout);
-            (void) new QskPushButton("B", layout);
-            (void) new QskPushButton("C", layout);
-        }
-        box->setAutoLayoutChildren(true);
-        box->setGradientHint(QskBox::Panel, {Qt::red, Qt::blue});
-        box->setFixedSize(400,400);
-        box->setGeometry(100,100,400,400);
+            auto* const layout = new QskLinearBox( dialog );
+            ( void ) new QskPushButton( "Foreground", layout );
+            ( void ) new QskPushButton( "Foreground", layout );
+            ( void ) new QskPushButton( "Foreground", layout );
 
-        QTimer::singleShot(1000, this, [box](){addBlurredBox(box);});
+            layout->setGeometry(dialog->geometry());
+            qskSetItemGeometry( effect, layout->geometry() );
+        }
     }
 };
 
 int main( int argc, char** argv )
 {
-    qskSkinManager->setPluginPaths({ R"(C:\repositories\qskinny_rveh-install-win\plugins)" });
+    qskSkinManager->setPluginPaths( { R"(C:\repositories\qskinny_rveh-install-win\plugins)" } );
 
     QGuiApplication app( argc, argv );
 
@@ -145,8 +171,7 @@ int main( int argc, char** argv )
     qskSetup->setSkin( "squiek" );
 
     QskWindow window;
-    window.setColor( QskRgb::Wheat );
-    window.addItem( new MainView(window.contentItem()) );
+    window.addItem( new MainView( window.contentItem() ) );
     window.resize( 800, 600 );
     window.show();
 
