@@ -51,6 +51,9 @@ namespace
             auto selectButton = new Button( "Selection", this );
             connect( selectButton, &Button::clicked, this, &ButtonBox::execSelection );
 
+            auto colorButton = new Button( "Colors", this );
+            connect( colorButton, &Button::clicked, this, &ButtonBox::execColorSelection );
+
             setExtraSpacingAt( Qt::BottomEdge );
         }
 
@@ -109,6 +112,21 @@ namespace
             };
 
             qskDialog->select( "Here we go ...", "Hot Hot Hot", entries, 7 );
+        }
+
+        void execColorSelection()
+        {
+            static const QVector<QColor> colors {
+                QColor::fromRgb( 255, 0, 0 ),
+                QColor::fromRgb( 255, 255, 0 ),
+                QColor::fromRgb( 0, 255, 0 ),
+                QColor::fromRgb( 0, 255, 255 ),
+                QColor::fromRgb( 0, 0, 255 ),
+                QColor::fromRgb( 255, 0, 255 ),
+                QColor::fromRgb( 255, 0, 0 ),
+            };
+
+            qskDialog->select("Select a color...", "Select from palette...", colors);
         }
     };
 }

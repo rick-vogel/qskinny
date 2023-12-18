@@ -187,12 +187,50 @@ static QString qskSelectSubWindow(
     return selectedEntry;
 }
 
+static QColor qskSelectSubWindow(
+    QQuickWindow* window, const QString& title, const QString& text,
+    QskDialog::Actions actions, QskDialog::Action defaultAction,
+    const QVector<QColor>& entries, int selectedRow )
+{
+    auto subWindow = new QskColorSelectionSubWindow( window->contentItem() );
+    subWindow->setInfoText( text );
+    subWindow->setEntries( entries );
+    subWindow->setSelectedRow( selectedRow );
+
+    QColor selectedEntry;
+
+    qskSetupSubWindow( title, actions, defaultAction, subWindow );
+    if ( subWindow->exec() == QskDialog::Accepted )
+        selectedEntry = subWindow->selectedEntry();
+
+    return selectedEntry;
+}
+
 static QString qskSelectWindow(
     QWindow* transientParent, const QString& title, const QString& text,
     QskDialog::Actions actions, QskDialog::Action defaultAction,
     const QStringList& entries, int selectedRow )
 {
     QskSelectionWindow window;
+    window.setInfoText( text );
+    window.setEntries( entries );
+    window.setSelectedRow( selectedRow );
+
+    QString selectedEntry = window.selectedEntry();
+
+    qskSetupWindow( transientParent, title, actions, defaultAction, &window );
+    if ( qskExec( &window ) == QskDialog::Accepted )
+        selectedEntry = window.selectedEntry();
+
+    return selectedEntry;
+}
+
+static QColor qskSelectWindow(
+    QWindow* transientParent, const QString& title, const QString& text,
+    QskDialog::Actions actions, QskDialog::Action defaultAction,
+    const QVector<QColor>& entries, int selectedRow )
+{
+    QskColorSelectionWindow window;
     window.setInfoText( text );
     window.setEntries( entries );
     window.setSelectedRow( selectedRow );
@@ -337,6 +375,33 @@ QString QskDialog::select(
     return qskSelectWindow( m_data->transientParent, title, text,
         actions, defaultAction, entries, selectedRow );
 
+}
+
+Q_INVOKABLE QColor QskDialog::select( const QString& title, const QString& text,
+    const QVector< QColor >& entries, int selectedRow ) const
+{
+#if 1
+    // should be parameters
+    const auto actions = QskDialog::Ok | QskDialog::Cancel;
+    const auto defaultAction = QskDialog::Ok;
+#endif
+
+    if ( m_data->policy == EmbeddedBox )
+    {
+        auto quickWindow = qobject_cast< QQuickWindow* >( m_data->transientParent );
+
+        if ( quickWindow == nullptr )
+            quickWindow = qskSomeQuickWindow();
+
+        if ( quickWindow )
+        {
+            return qskSelectSubWindow( quickWindow,
+                title, text, actions, defaultAction, entries, selectedRow );
+        }
+    }
+
+    return qskSelectWindow( m_data->transientParent, title, text,
+        actions, defaultAction, entries, selectedRow );
 }
 
 QskDialog::ActionRole QskDialog::actionRole( Action action )

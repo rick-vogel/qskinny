@@ -9,6 +9,7 @@
 #include "QskDialogWindow.h"
 
 class QskTextOptions;
+class QskLinearBox;
 
 class QSK_EXPORT QskSelectionWindow : public QskDialogWindow
 {
@@ -56,6 +57,18 @@ class QSK_EXPORT QskSelectionWindow : public QskDialogWindow
   private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
+};
+
+class QSK_EXPORT QskColorSelectionWindow : public QskSelectionWindow
+{
+    Q_OBJECT
+  public:
+      QskColorSelectionWindow(QWindow* parent = nullptr);
+  public Q_SLOTS:
+      void setEntries(const QVector<QColor>& entries);
+  private:
+      using QskSelectionWindow::setEntries;
+      QskLinearBox* m_colors = nullptr;
 };
 
 #endif

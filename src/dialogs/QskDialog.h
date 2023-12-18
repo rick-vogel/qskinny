@@ -139,6 +139,10 @@ class QSK_EXPORT QskDialog : public QObject
         const QString& title, const QString& text,
         const QStringList& entries, int selectedRow = 0 ) const;
 
+    Q_INVOKABLE QColor select(
+        const QString& title, const QString& text,
+        const QVector<QColor>& entries, int selectedRow = 0 ) const;
+
     static ActionRole actionRole( Action action );
 
   Q_SIGNALS:
