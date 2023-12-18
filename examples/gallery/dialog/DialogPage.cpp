@@ -117,13 +117,7 @@ namespace
         void execColorSelection()
         {
             static const QVector<QColor> colors {
-                QColor::fromRgb( 255, 0, 0 ),
-                QColor::fromRgb( 255, 255, 0 ),
-                QColor::fromRgb( 0, 255, 0 ),
-                QColor::fromRgb( 0, 255, 255 ),
-                QColor::fromRgb( 0, 0, 255 ),
-                QColor::fromRgb( 255, 0, 255 ),
-                QColor::fromRgb( 255, 0, 0 ),
+"#ffff0000","#ffff8700","#ffffd300","#ffdeff0a","#ffa1ff0a","#ff0aff99","#ff0aefff","#ff147df5","#ff580aff","#ffbe0aff"
             };
 
             qskDialog->select("Select a color...", "Select from palette...", colors);

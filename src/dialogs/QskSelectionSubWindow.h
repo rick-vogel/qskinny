@@ -10,6 +10,7 @@
 
 class QskTextOptions;
 class QskLinearBox;
+class QskGridBox;
 
 class QSK_EXPORT QskSelectionSubWindow : public QskDialogSubWindow
 {
@@ -70,7 +71,7 @@ class QSK_EXPORT QskColorSelectionSubWindow : public QskSelectionSubWindow
 
   private:
     using QskSelectionSubWindow::setEntries;
-    QskLinearBox* m_colors = nullptr;    
+    QskGridBox* m_colors = nullptr;    
 };
 
 #endif

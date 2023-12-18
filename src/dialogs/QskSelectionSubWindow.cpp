@@ -134,6 +134,7 @@ QString QskSelectionSubWindow::selectedEntry() const
 
 #include <QskScrollArea.h>
 #include <QskLinearBox.h>
+#include <QskGridBox.h>
 #include <QskPushButton.h>
 #include <QskBoxBorderColors.h>
 #include <QskBoxBorderMetrics.h>
@@ -145,8 +146,10 @@ QskColorSelectionSubWindow::QskColorSelectionSubWindow( QQuickItem* parent )
     layout->itemAtIndex(layout->elementCount() - 1)->setVisible(false);
 
     auto* const scroll = new QskScrollArea(layout);
-    scroll->setMinimumHeight(60);
-    m_colors = new QskLinearBox(Qt::Horizontal, scroll);
+    scroll->setMinimumHeight(60 * 6);
+    scroll->setMinimumWidth( 60 * 6 );
+    m_colors = new QskGridBox(scroll);
+    m_colors->setDefaultAlignment( Qt::AlignCenter );
     scroll->setScrolledItem(m_colors);
     scroll->setItemResizable(true);
     layout->setStretchFactor(1, 0);
@@ -157,16 +160,22 @@ void QskColorSelectionSubWindow::setEntries( const QVector< QColor >& entries )
 {
     m_colors->clear();    
     int index = 0;
+
+    const auto cols = 6;
+    const auto rows = 6;
+
     for ( const auto& color : qAsConst( entries ) )
     {
         using Q = QskPushButton;
-        auto* const box = new Q( m_colors );
+        auto* const box = new Q;
         box->setColor( Q::Panel, color );
         box->setColor( Q::Splash, Qt::transparent );
         box->setFixedSize( 48, 48 );
         box->setCheckable( true );
         box->setBoxBorderColorsHint(Q::Panel | Q::Checked, Qt::black);
         box->setBoxBorderMetricsHint(Q::Panel | Q::Checked, 2);
+
+        m_colors->addItem(box, index / cols, index % cols);
 
         connect(box, &QskPushButton::checkedChanged, this, [this, index](bool checked){
             if(checked)
@@ -179,6 +188,8 @@ void QskColorSelectionSubWindow::setEntries( const QVector< QColor >& entries )
 
         index++;
     }
+
+    m_colors->setMaximumHeight(entries.count() / cols * 60);
 }
 
 #include "moc_QskSelectionSubWindow.cpp"
