@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   viewBox="0 0 30.00077 30.000222"
+   height="32"
+   width="32"
+   version="1.1"
+   id="svg2"
+   inkscape:version="0.48.5 r10040"
+   sodipodi:docname="01.13.05h.svg">
+  <defs
+     id="defs16" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="640"
+     inkscape:window-height="480"
+     id="namedview14"
+     showgrid="false"
+     inkscape:zoom="7.4105892"
+     inkscape:cx="26.346077"
+     inkscape:cy="16.03495"
+     inkscape:window-x="0"
+     inkscape:window-y="31"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg2" />
+  <metadata
+     id="metadata4">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="matrix(0.15872941,0,0,0.15872941,-45.150449,-63.688167)"
+     id="g6">
+    <g
+       transform="matrix(1.9484,0,0,1.8358,287.52,353.9)"
+       id="g8"
+       style="fill:none;stroke:#ffa07a;stroke-width:8.87030029">
+      <circle
+         cy="77.070999"
+         cx="46.570999"
+         r="38.898998"
+         id="circle10"
+         d="m 85.469997,77.070999 c 0,21.483324 -17.415674,38.899001 -38.898998,38.899001 -21.483323,0 -38.8989981,-17.415677 -38.8989981,-38.899001 0,-21.483323 17.4156751,-38.898998 38.8989981,-38.898998 21.483324,0 38.898998,17.415675 38.898998,38.898998 z"
+         sodipodi:cx="46.570999"
+         sodipodi:cy="77.070999"
+         sodipodi:rx="38.898998"
+         sodipodi:ry="38.898998" />
+      <line
+         y2="34.896999"
+         y1="120.62"
+         x2="88.863998"
+         x1="3.1359999"
+         id="line12" />
+    </g>
+  </g>
+</svg>
