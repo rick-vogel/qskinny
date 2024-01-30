@@ -7,6 +7,7 @@ add_subdirectory(shadows)
 add_subdirectory(shapes)
 add_subdirectory(charts)
 add_subdirectory(plots)
+add_subdirectory(parrots)
 
 if (BUILD_INPUTCONTEXT)
     add_subdirectory(inputpanel)
