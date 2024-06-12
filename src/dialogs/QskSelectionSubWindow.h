@@ -9,6 +9,8 @@
 #include "QskDialogSubWindow.h"
 
 class QskTextOptions;
+class QskLinearBox;
+class QskGridBox;
 
 class QSK_EXPORT QskSelectionSubWindow : public QskDialogSubWindow
 {
@@ -56,6 +58,20 @@ class QSK_EXPORT QskSelectionSubWindow : public QskDialogSubWindow
   private:
     class PrivateData;
     std::unique_ptr< PrivateData > m_data;
+};
+
+class QSK_EXPORT QskColorSelectionSubWindow : public QskSelectionSubWindow
+{
+    Q_OBJECT
+  public:
+    QskColorSelectionSubWindow( QQuickItem* parent = nullptr );
+
+  public Q_SLOTS:
+    void setEntries( const QVector< QColor >& entries );
+
+  private:
+    using QskSelectionSubWindow::setEntries;
+    QskGridBox* m_colors = nullptr;    
 };
 
 #endif

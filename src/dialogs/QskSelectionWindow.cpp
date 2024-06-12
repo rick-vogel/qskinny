@@ -138,4 +138,35 @@ QString QskSelectionWindow::selectedEntry() const
     return m_data->listBox->selectedEntry();
 }
 
+#include <QskScrollArea.h>
+#include <QskLinearBox.h>
+#include <QskPushButton.h>
+
+QskColorSelectionWindow::QskColorSelectionWindow( QWindow* parent )
+    : QskSelectionWindow( parent )
+{
+    auto* const layout = static_cast<QskLinearBox*>(contentItem());    
+    layout->itemAtIndex(layout->elementCount() - 1)->setVisible(false);
+
+    auto* const scroll = new QskScrollArea(layout);
+    m_colors = new QskLinearBox(Qt::Horizontal, scroll);
+    scroll->setScrolledItem(m_colors);    
+    scroll->setPreferredSize(-1, 50);
+    layout->setStretchFactor(layout->itemAtIndex(layout->elementCount() - 1), 0);
+    layout->setStretchFactor(scroll, 10);
+}
+
+void QskColorSelectionWindow::setEntries(const QVector<QColor>& entries)
+{
+    m_colors->clear();
+    for ( const auto& color : qAsConst( entries ) )
+    {
+        using Q = QskPushButton;
+        auto* const box = new Q( m_colors );
+        box->setColor( Q::Panel, color );
+        box->setColor( Q::Splash, Qt::transparent );
+        box->setFixedSize( 48, 48 );
+    }
+}
+
 #include "moc_QskSelectionWindow.cpp"
